@@ -1,11 +1,16 @@
 import random
-
+import pygame
 from colorama import init, Fore
 
 cell = 'c'
 wall = 'w'
 
 S = 10
+
+
+def surroundingCells(rand_wall):
+    pass
+
 
 def init_maze(width,height):
     maze = []
@@ -139,9 +144,9 @@ def print_maze(maze):
                 print(Fore.RED, f'{maze[i][j]}', end='')
         print('')
 
-choice = input('Create a maze? (Type the answer exactly the same as it says) [Yes/No] -- ')
-if choice == 'Yes':
-    sizeChoice = input('Difficulty? [Easy/Medium/Hard/Extreme/Why] -- ')
+choice = input('Labirintust szeretnél csinálni? (Gépeld be pontosan ugyan azt a választ, amelyet itt ír): [Igen/Nem] -- ')
+if choice == 'Igen':
+    sizeChoice = input('Nehézség? [Easy/Medium/Hard/Extreme/Why] -- ')
     if sizeChoice == 'Easy':
         print_maze(init_maze(S, S))
     elif sizeChoice == 'Medium':
@@ -152,6 +157,6 @@ if choice == 'Yes':
         print_maze(init_maze(S * 10, S * 10))
     elif sizeChoice == 'Why':
         print_maze(init_maze(S * 100, S * 100))
-elif choice == 'No':
-    print('Alright-')
+elif choice == 'Nem':
+    print('Rendben-')
 
