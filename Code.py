@@ -5,12 +5,26 @@ from colorama import init, Fore
 cell = 'c'
 wall = 'w'
 
-S = 10
+Size = 10
 
 
 def surroundingCells(rand_wall):
-    pass
+    s_cells = 0
+    if (maze[rand_wall[0] - 1][rand_wall[1]] == 'c'):
+        s_cells += 1
+    if (maze[rand_wall[0] + 1][rand_wall[1]] == 'c'):
+        s_cells += 1
+    if (maze[rand_wall[0]][rand_wall[1] - 1] == 'c'):
+        s_cells += 1
+    if (maze[rand_wall[0]][rand_wall[1] + 1] == 'c'):
+        s_cells += 1
+    return s_cells
 
+
+def delete_wall(rand_wall):
+    for wall in walls:
+        if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
+            walls.remove(wall)
 
 def init_maze(width,height):
     maze = []
@@ -114,23 +128,6 @@ def init_maze(width,height):
                 continue
             continue
 
-    def surroundingCells(rand_wall):
-        s_cells = 0
-        if (maze[rand_wall[0]-1][rand_wall[1]] == 'c'):
-            s_cells += 1
-        if (maze[rand_wall[0]+1][rand_wall[1]] == 'c'):
-            s_cells += 1
-        if (maze[rand_wall[0]][rand_wall[1]-1] == 'c'):
-            s_cells +=1
-        if (maze[rand_wall[0]][rand_wall[1]+1] == 'c'):
-            s_cells += 1
-        return s_cells
-
-    def delete_wall(rand_wall):
-        for wall in walls:
-            if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
-                walls.remove(wall)
-
         return maze
 
 def print_maze(maze):
@@ -148,15 +145,15 @@ choice = input('Labirintust szeretnél csinálni? (Gépeld be pontosan ugyan azt
 if choice == 'Igen':
     sizeChoice = input('Nehézség? [Easy/Medium/Hard/Extreme/Why] -- ')
     if sizeChoice == 'Easy':
-        print_maze(init_maze(S, S))
+        print_maze(init_maze(Size, Size))
     elif sizeChoice == 'Medium':
-        print_maze(init_maze(S * 3, S * 3))
+        print_maze(init_maze(Size * 3, Size * 3))
     elif sizeChoice == 'Hard':
-        print_maze(init_maze(S * 5, S * 5))
+        print_maze(init_maze(Size * 5, Size * 5))
     elif sizeChoice == 'Extreme':
-        print_maze(init_maze(S * 10, S * 10))
+        print_maze(init_maze(Size * 10, Size * 10))
     elif sizeChoice == 'Why':
-        print_maze(init_maze(S * 100, S * 100))
+        print_maze(init_maze(Size * 100, Size * 100))
 elif choice == 'Nem':
     print('Rendben-')
 
