@@ -1,159 +1,71 @@
 import random
-import pygame
-from colorama import init, Fore
 
-cell = 'c'
-wall = 'w'
+def create_maze(width, height):
+    maze = [[{"top": True, "right": True, "bottom": True, "left": True} for j in range(width)] for i in range(height)]
 
-Size = 10
+    current_i, current_j = random.randint(0, height - 1), random.randint(0, width - 1)
+    stack = [(current_i, current_j)]
 
-
-def surroundingCells(rand_wall):
-    s_cells = 0
-    if (maze[rand_wall[0] - 1][rand_wall[1]] == 'c'):
-        s_cells += 1
-    if (maze[rand_wall[0] + 1][rand_wall[1]] == 'c'):
-        s_cells += 1
-    if (maze[rand_wall[0]][rand_wall[1] - 1] == 'c'):
-        s_cells += 1
-    if (maze[rand_wall[0]][rand_wall[1] + 1] == 'c'):
-        s_cells += 1
-    return s_cells
-
-
-def delete_wall(rand_wall):
-    for wall in walls:
-        if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
-            walls.remove(wall)
-
-def init_maze(width,height):
-    maze = []
-    for i in range(0,height):
-        line = []
-        for j in range(0,width):
-            line.append('u')
-        maze.append(line)
-
-
-    starting_height = int(random.random() * height)
-
-    if starting_height == 0:
-        starting_height += 1
-
-    if starting_height == height-1:
-        starting_height -= 1
-
-
-    starting_width = int(random.random() * width)
-
-    if starting_width == 0:
-        starting_width += 1
-
-    if starting_width == width-1:
-        starting_width -= 1
-
-    maze[starting_height][starting_width] = cell
-    walls = []
-    walls.append([starting_height - 1, starting_width])
-    walls.append([starting_height, starting_width - 1])
-    walls.append([starting_height, starting_width + 1])
-    walls.append([starting_height + 1, starting_width])
-
-
-    maze[starting_height - 1][starting_width] = wall
-    maze[starting_height][starting_width - 1] = wall
-    maze[starting_height][starting_width + 1] = wall
-    maze[starting_height + 1][starting_width] = wall
-
-    while walls:
-        rand_wall = walls[int(random.random()*len(walls))-1]
-
-        if rand_wall[1] != 0:
-            if maze[rand_wall[0]][rand_wall[1]-1] == 'u' and maze[rand_wall[0]][rand_wall[1]+1] == 'c':
-                s_cells = surroundingCells(rand_wall)
-                if s_cells < 2:
-                    maze[rand_wall[0]][rand_wall[1]] = 'c'
-                
-                    if (rand_wall[0] != 0):
-                        if (maze[rand_wall[0]-1][rand_wall[1]] != 'c'):
-                            maze[rand_wall[0]-1][rand_wall[1]] = 'w'
-                        if ([rand_wall[0]-1, rand_wall[1]] not in walls):
-                            walls.append([rand_wall[0]-1, rand_wall[1]])
-                delete_wall(rand_wall)
-                continue
+    while stack:
+        current_i, current_j = stack.pop()
+        maze[current_i][current_j]["visited"] = True
+        directions = []
+        if current_i > 0 and not maze[current_i - 1][current_j].get("visited"):
+            directions.append(("top", -1, 0))
+        if current_j < width - 1 and not maze[current_i][current_j + 1].get("visited"):
+            directions.append(("right", 0, 1))
+        if current_i < height - 1 and not maze[current_i + 1][current_j].get("visited"):
+            directions.append(("bottom", 1, 0))
+        if current_j > 0 and not maze[current_i][current_j - 1].get("visited"):
+            directions.append(("left", 0, -1))
+        if not directions:
             continue
+        direction, di, dj = random.choice(directions)
+        next_i, next_j = current_i + di, current_j + dj
+        maze[current_i][current_j][direction] = False
+        maze[next_i][next_j][{"top": "bottom", "right": "left", "bottom": "top", "left": "right"}[direction]] = False
+        stack.append((next_i, next_j))
 
-        if rand_wall[0] != 0:
-            if maze[rand_wall[0]-1][rand_wall[1]] == 'u' and maze[rand_wall[0]+1][rand_wall[1]+1] == 'c':
-                s_cells = surroundingCells(rand_wall)
-                if s_cells < 2:
-                    maze[rand_wall[0]][rand_wall[1]] = 'c'
-                
-                    if (rand_wall[0] != 0):
-                        if (maze[rand_wall[0]-1][rand_wall[1]] != 'c'):
-                            maze[rand_wall[0]-1][rand_wall[1]] = 'w'
-                        if ([rand_wall[0]-1, rand_wall[1]] not in walls):
-                            walls.append([rand_wall[0]-1, rand_wall[1]])
-                delete_wall(rand_wall)
-                continue
-            continue
+    for i in range(height):
+        for j in range(width):
+            if "visited" in maze[i][j]:
+                del maze[i][j]["visited"]
 
-        if rand_wall[0] != height-1:
-            if maze[rand_wall[0]+1][rand_wall[1]] == 'u' and maze[rand_wall[0]-1][rand_wall[1]] == 'c':
-                s_cells = surroundingCells(rand_wall)
-                if s_cells < 2:
-                    maze[rand_wall[0]][rand_wall[1]] = 'c'
-                
-                    if (rand_wall[0] != 0):
-                        if (maze[rand_wall[0]-1][rand_wall[1]] != 'c'):
-                            maze[rand_wall[0]-1][rand_wall[1]] = 'w'
-                        if ([rand_wall[0]-1, rand_wall[1]] not in walls):
-                            walls.append([rand_wall[0]-1, rand_wall[1]])
-                delete_wall(rand_wall)
-                continue
-            continue
-                            
-        if rand_wall[1] != width-1:
-            if maze[rand_wall[0]][rand_wall[1]+1] == 'u' and maze[rand_wall[0]][rand_wall[1]-1] == 'c':
-                s_cells = surroundingCells(rand_wall)
-                if s_cells < 2:
-                    maze[rand_wall[0]][rand_wall[1]] = 'c'
-                
-                    if (rand_wall[0] != 0):
-                        if (maze[rand_wall[0]-1][rand_wall[1]] != 'c'):
-                            maze[rand_wall[0]-1][rand_wall[1]] = 'w'
-                        if ([rand_wall[0]-1, rand_wall[1]] not in walls):
-                            walls.append([rand_wall[0]-1, rand_wall[1]])
-                delete_wall(rand_wall)
-                continue
-            continue
-
-        return maze
+    return maze
 
 def print_maze(maze):
-    for i in range(0, len(maze)):
-        for j in range(0, len(maze[0])):
-            if maze[i][j] == 'u':
-                print(Fore.WHITE, f'{maze[i][j]}', end='')
-            elif maze[i][j] == 'c':
-                print(Fore.GREEN, f'{maze[i][j]}', end='')
-            else:
-                print(Fore.RED, f'{maze[i][j]}', end='')
-        print('')
+    height, width = len(maze), len(maze[0])
+    for i in range(height):
+        for j in range(width):
+            print("+", end="")
+            print("  " if maze[i][j]["top"] else "--", end="")
+        print("+")
+        for j in range(width):
+            print("|" if maze[i][j]["left"] else " ", end="")
+            print("  ", end="")
+            print("|" if maze[i][j]["right"] else " ", end="")
+        print("|")
+    for j in range(width):
+        print("+", end="")
+        print("  " if maze[height - 1][j]["bottom"] else "--", end="")
+    print("+")
 
-choice = input('Labirintust szeretnél csinálni? (Gépeld be pontosan ugyan azt a választ, amelyet itt ír): [Igen/Nem] -- ')
-if choice == 'Igen':
-    sizeChoice = input('Nehézség? [Easy/Medium/Hard/Extreme/Why] -- ')
-    if sizeChoice == 'Easy':
-        print_maze(init_maze(Size, Size))
-    elif sizeChoice == 'Medium':
-        print_maze(init_maze(Size * 3, Size * 3))
-    elif sizeChoice == 'Hard':
-        print_maze(init_maze(Size * 5, Size * 5))
-    elif sizeChoice == 'Extreme':
-        print_maze(init_maze(Size * 10, Size * 10))
-    elif sizeChoice == 'Why':
-        print_maze(init_maze(Size * 100, Size * 100))
-elif choice == 'Nem':
-    print('Rendben-')
+choice = input("Milyen nehézségű labirintust szeretnél generálni? [1-5] -- ")
+if choice == '1':
+    maze1 = create_maze(10, 10)
+    print_maze(maze1)
+elif choice == '2':
+    maze2 = create_maze(20, 20)
+    print_maze(maze2)
+elif choice == '3':
+    maze3 = create_maze(30, 30)
+    print_maze(maze3)
+elif choice == '4':
+    maze4 = create_maze(40, 40)
+    print_maze(maze4)
+elif choice == '5':
+    maze5 = create_maze(50, 50)
+    print_maze(maze5)
 
+#maze = create_maze(10, 10)
+#print_maze(maze)
