@@ -1,71 +1,40 @@
-import random
+# két koordináta különbségéből megmondja, hogy a mező 4db boolean értékéből melyik irányú falon megyünk át
+def whichNeighbor(dx,dy):
+    return (1 if dx+dy > 0 else 0) + (2 if dx != 0 else 0)
 
-def create_maze(width, height):
-    maze = [[{"top": True, "right": True, "bottom": True, "left": True} for j in range(width)] for i in range(height)]
+# kirajzolja a mezőket a pygame-be
+def drawMaze():
+    # feketével töltjük ki a képernyőt
+    screen.fill((0,0,0))
+    # végig megyünk a mezőkön
+    for x in range(len(maze)):
+        for y in range(len(maze[x])):
+            # a kiválasztot mezőt...
+            m = maze[x][y]
+            # ha van alja kirajzoljuk
+            if m[1]:
+                pygame.draw.line(screen, (255,255,255), (x100, (y+1)100), ((x+1)100, (y+1)100), 1)
+            # ha van jobb oldala kirajzoljuk
+            if m[3]:
+                pygame.draw.line(screen, (255, 255, 255), ((x+1)100, y100), ((x+1)100, (y+1)100), 1)
+            # a másik kettőt nem kell, mert a felettünk és balra lévőnél már rajzoltuk
 
-    current_i, current_j = random.randint(0, height - 1), random.randint(0, width - 1)
-    stack = [(current_i, current_j)]
+# elindítjuk a labirintus generálását 0,0 mezőtől, innen már rekurzívan meg fogja hívni magát a többi mezőre
+genMaze(0,0)
 
-    while stack:
-        current_i, current_j = stack.pop()
-        maze[current_i][current_j]["visited"] = True
-        directions = []
-        if current_i > 0 and not maze[current_i - 1][current_j].get("visited"):
-            directions.append(("top", -1, 0))
-        if current_j < width - 1 and not maze[current_i][current_j + 1].get("visited"):
-            directions.append(("right", 0, 1))
-        if current_i < height - 1 and not maze[current_i + 1][current_j].get("visited"):
-            directions.append(("bottom", 1, 0))
-        if current_j > 0 and not maze[current_i][current_j - 1].get("visited"):
-            directions.append(("left", 0, -1))
-        if not directions:
-            continue
-        direction, di, dj = random.choice(directions)
-        next_i, next_j = current_i + di, current_j + dj
-        maze[current_i][current_j][direction] = False
-        maze[next_i][next_j][{"top": "bottom", "right": "left", "bottom": "top", "left": "right"}[direction]] = False
-        stack.append((next_i, next_j))
-
-    for i in range(height):
-        for j in range(width):
-            if "visited" in maze[i][j]:
-                del maze[i][j]["visited"]
-
-    return maze
-
-def print_maze(maze):
-    height, width = len(maze), len(maze[0])
-    for i in range(height):
-        for j in range(width):
-            print("+", end="")
-            print("  " if maze[i][j]["top"] else "--", end="")
-        print("+")
-        for j in range(width):
-            print("|" if maze[i][j]["left"] else " ", end="")
-            print("  ", end="")
-            print("|" if maze[i][j]["right"] else " ", end="")
-        print("|")
-    for j in range(width):
-        print("+", end="")
-        print("  " if maze[height - 1][j]["bottom"] else "--", end="")
-    print("+")
-
-choice = input("Milyen nehézségű labirintust szeretnél generálni? [1-5] -- ")
-if choice == '1':
-    maze1 = create_maze(10, 10)
-    print_maze(maze1)
-elif choice == '2':
-    maze2 = create_maze(20, 20)
-    print_maze(maze2)
-elif choice == '3':
-    maze3 = create_maze(30, 30)
-    print_maze(maze3)
-elif choice == '4':
-    maze4 = create_maze(40, 40)
-    print_maze(maze4)
-elif choice == '5':
-    maze5 = create_maze(50, 50)
-    print_maze(maze5)
-
-#maze = create_maze(10, 10)
-#print_maze(maze)
+# kirajzoljuk a legenerált labirintust, amíg a felhasználó be nem zárja
+done = False
+while not done:
+    # várjuk az X gomb megnyomását
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+            break
+    # kirajzolunk
+    drawMaze()
+    # kirakjuk a friss rajzot a képernyőre (rajzolás mindig egy másodlagos képernyőre történik, hogy ne villogjon)
+    pygame.display.flip()
+    # várunk picit, hogy kb 60fps-el rajzoljunk (ne terheljük túl a videókártyát)
+    clock.tick(60)
+# kilépett a felhasználó, pygame leállítás és vége
+pygame.quit()
