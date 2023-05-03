@@ -65,14 +65,15 @@ def drawMaze():
             m = maze[x][y]
             # ha van alja kirajzoljuk
             if m[1]:
-                pygame.draw.line(screen, (255,255,255), (x1*00, (y+1),100), ((x+1),100, (y+1),100), 1)
+                pygame.draw.line(screen, (255, 255, 255), (x * 100, (y + 1) * 100), ((x + 1) * 100, (y + 1) * 100), 1)
             # ha van jobb oldala kirajzoljuk
             if m[3]:
-                pygame.draw.line(screen, (255, 255, 255), ((x+1),100, y*100), ((x+1),100, (y+1),100), 1)
+                pygame.draw.line(screen, (255, 255, 255), ((x + 1) * 100, y * 100), ((x + 1) * 100, (y + 1) * 100), 1)
             # a másik kettőt nem kell, mert a felettünk és balra lévőnél már rajzoltuk
 
+
 # elindítjuk a labirintus generálását 0,0 mezőtől, innen már rekurzívan meg fogja hívni magát a többi mezőre
-genMaze(0,0)
+genMaze(0, 0)
 
 # kirajzoljuk a legenerált labirintust, amíg a felhasználó be nem zárja
 done = False
